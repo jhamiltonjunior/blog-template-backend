@@ -22,7 +22,11 @@ func (user *User) CreateUser() http.HandlerFunc {
 			return
 		}
 
-		user.ID = uuid.New()
+		var err error
+		user.ID, err = uuid.NewUUID()
+		if err != nil {
+			panic(err)
+		}
 
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(user); err != nil {

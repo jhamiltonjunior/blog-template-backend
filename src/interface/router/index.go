@@ -24,8 +24,10 @@ func NewServer() *Server {
 func (server *Server) Routes() {
 	server.User()
 
-	server.HandleFunc("/",
-		func(writer http.ResponseWriter, req *http.Request) {
-			writer.Write([]byte("Hello"))
-		}).Methods("GET")
+	server.HandleFunc("/", func(writer http.ResponseWriter, req *http.Request) {
+		writer.Write([]byte("Hello"))
+	}).Methods("GET")
+
+	http.Handle("/", server.Router)
+	http.Handle("/user", server.Router)
 }

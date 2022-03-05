@@ -15,13 +15,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/interface/router"
 )
 
 var (
 	port = os.Getenv("HTTP_PORT")
-	// muxR = mux.NewRouter()
 )
 
 func main() {
@@ -29,18 +27,9 @@ func main() {
 		port = ":1289"
 	}
 
-	server := &router.Server{
-		Router: mux.NewRouter(),
-	}
-	server.Routes()
-
-	// router.NewServer()
-
 	fmt.Printf("server listen in port%s", port)
 
-	http.Handle("/", server.Router)
-	http.Handle("/user", server.Router)
-	// http.Handle("/register", server.Router)
+	router.NewServer()
 
 	http.ListenAndServe(port, nil)
 }
