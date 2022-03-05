@@ -10,7 +10,37 @@
 // This code goes create outher file with the content to Web Scrapping
 package main
 
+import (
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/gorilla/mux"
+	"github.com/jhamiltonjunior/priza-tech-backend/src/interface/router"
+)
+
+var (
+	port = os.Getenv("HTTP_PORT")
+	// muxR = mux.NewRouter()
+)
 
 func main() {
+	if port == "" {
+		port = ":1289"
+	}
 
+	server := &router.Server{
+		Router: mux.NewRouter(),
+	}
+	server.Routes()
+
+	// router.NewServer()
+
+	fmt.Printf("server listen in port%s", port)
+
+	http.Handle("/", server.Router)
+	http.Handle("/user", server.Router)
+	// http.Handle("/register", server.Router)
+
+	http.ListenAndServe(port, nil)
 }
