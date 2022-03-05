@@ -29,21 +29,17 @@ func Insert(sql string, values []string) {
 
 }
 
-func Select(sql string) (sql.Result, error) {
+func Select(sql string) (*sql.Rows, error) {
 
 	db, err := Open(
 		os.Getenv("DB_SOURCE"),
 	)
 	if err != nil {
-		fmt.Println(err)
-
 		return nil, err
 	}
 
-	result, err := db.Exec(sql)
+	result, err := db.Query(sql)
 	if err != nil {
-		fmt.Println(err)
-
 		return nil, err
 	}
 

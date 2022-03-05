@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 )
 
@@ -22,10 +21,12 @@ import (
 // "postgres://postgres@localhost/testdb?sslmode=disable"
 
 type User struct {
-	ID       uuid.UUID `json:"id" db:"id"`
-	Name     string    `json:"name" db:"name"`
-	Email    string    `json:"email" db:"email"`
-	Password string    `json:"password" db:"passwd"`
+	ID        int    `json:"user_id" db:"user_id"`
+	Name      string `json:"username" db:"username"`
+	Email     string `json:"email" db:"email"`
+	Password  string `json:"password" db:"passwd"`
+	CreatedAt string `json:"created_at" db:"created_at"`
+	UpdatedAt string `json:"updated_at" db:"updated_at"`
 }
 
 func (user *User) CreateUser() http.HandlerFunc {
@@ -46,11 +47,11 @@ func (user *User) CreateUser() http.HandlerFunc {
 			return
 		}
 
-		var err error
-		user.ID, err = uuid.NewUUID()
-		if err != nil {
-			panic(err)
-		}
+		// var err error
+		// user.ID, err = uuid.NewUUID()
+		// if err != nil {
+		// 	panic(err)
+		// }
 
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(user); err != nil {
@@ -69,22 +70,57 @@ func (user *User) ShowUser() http.HandlerFunc {
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			writer.Header().Set("Content-type", "application/json")
-			
+
 			fmt.Println(err)
-			
+
 			return
 		}
-		fmt.Println(result)
 
-		// column, err := result.Columns()
-		// if err != nil {
-		// 	fmt.Println(err)
-			
-		// 	return
-		// }
+
+		for result.Next() {
+			user := User{}
+
+			err = result.Scan(
+				&user.ID, &user.Name, &user.Email,
+				&user.Password, &user.CreatedAt, &user.UpdatedAt,
+			)
+			if err != nil {
+				err = fmt.Errorf("erro in result.Scan %v", err)
+
+				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				writer.Header().Set("Content-type", "application/json")
+
+				return
+			}
+
+			user.Password = ""
+
+			writer.Header().Set("Content-type", "application/json")
+			if err := json.NewEncoder(writer).Encode(user); err != nil {
+				http.Error(writer, err.Error(), http.StatusInternalServerError)
+
+				return
+			}
+
+			fmt.Println(user.ID)
+			fmt.Println(user.Name)
+			fmt.Println(user.Email)
+			fmt.Println(user.CreatedAt)
+			fmt.Println(user.UpdatedAt)
+		}
+
+		err = result.Close()
+		if err != nil {
+			err = fmt.Errorf("erro in result.Close %v", err)
+
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			writer.Header().Set("Content-type", "application/json")
+
+			return
+		}
 
 		writer.Header().Set("Content-type", "application/json")
-		if err := json.NewEncoder(writer).Encode(result); err != nil {
+		if err := json.NewEncoder(writer).Encode("result"); err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 
 			return
