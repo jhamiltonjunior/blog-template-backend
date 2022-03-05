@@ -35,6 +35,6 @@ func main() {
 
 	router.NewServer()
 
-	fmt.Printf("server listen in port%s", port)
+	fmt.Printf("server listen in port%s \n", port)
 	http.ListenAndServe(port, nil)
 }

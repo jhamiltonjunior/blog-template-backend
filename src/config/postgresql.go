@@ -1,7 +1,9 @@
 package config
 
 import (
+	"database/sql"
 	"fmt"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -27,11 +29,10 @@ func Insert(sql string, values []string) {
 
 }
 
-func Select(sql string) (*sqlx.DB, error) {
+func Select(sql string) (sql.Result, error) {
 
 	db, err := Open(
-		// "postgres://postgres@localhost/vibbra?sslmode=disable",
-		"postgres://postgres:0000@localhost/vibbra?sslmode=disable",
+		os.Getenv("DB_SOURCE"),
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -39,12 +40,12 @@ func Select(sql string) (*sqlx.DB, error) {
 		return nil, err
 	}
 
-	_, err = db.Exec(sql)
+	result, err := db.Exec(sql)
 	if err != nil {
 		fmt.Println(err)
 
 		return nil, err
 	}
 
-	return db, nil
+	return result, nil
 }

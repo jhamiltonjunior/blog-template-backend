@@ -65,18 +65,26 @@ func (user *User) CreateUser() http.HandlerFunc {
 func (user *User) ShowUser() http.HandlerFunc {
 	// done := make(chan string)
 	return func(writer http.ResponseWriter, req *http.Request) {
-		showUsers, err := config.Select("SELECT * FROM user_schema")
+		result, err := config.Select("SELECT * FROM user_schema")
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			writer.Header().Set("Content-type", "application/json")
-
+			
 			fmt.Println(err)
-
+			
 			return
 		}
+		fmt.Println(result)
+
+		// column, err := result.Columns()
+		// if err != nil {
+		// 	fmt.Println(err)
+			
+		// 	return
+		// }
 
 		writer.Header().Set("Content-type", "application/json")
-		if err := json.NewEncoder(writer).Encode(showUsers); err != nil {
+		if err := json.NewEncoder(writer).Encode(result); err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 
 			return
