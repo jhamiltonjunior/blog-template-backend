@@ -21,5 +21,5 @@ func (server Server) User() {
 	}
 
 	server.HandleFunc("/register", user.CreateUser()).Methods("POST")
-	server.HandleFunc("/user", user.ListUser()).Methods("GET")
+	server.HandleFunc("/user", user.ShowUser()).Methods("GET")
 }

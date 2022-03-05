@@ -16,6 +16,7 @@ import (
 	"os"
 
 	"github.com/jhamiltonjunior/priza-tech-backend/src/interface/router"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -23,6 +24,11 @@ var (
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	if port == "" {
 		port = ":1289"
 	}

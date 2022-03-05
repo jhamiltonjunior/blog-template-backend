@@ -14,18 +14,16 @@ func NewServer() *Server {
 	server := &Server{
 		Router: mux.NewRouter(),
 	}
-	server.Routes()
+	server.routes()
 
 	return server
 }
 
-// routes está em minusculo porque eu não preciso exportar
+// routes it's lowercase because I don't need to export
 //
-func (server *Server) Routes() {
-	server.HandleFunc("/", func(writer http.ResponseWriter, req *http.Request) {
-		writer.Write([]byte("Hello"))
-	}).Methods("GET")
-	http.Handle("/", server.Router)
+func (server *Server) routes() {
+	// middleware := server.Router
+	// middleware.Use()
 
 	server.User()
 	http.Handle("/register", server.Router)
