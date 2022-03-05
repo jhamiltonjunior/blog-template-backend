@@ -22,12 +22,12 @@ func NewServer() *Server {
 // routes está em minusculo porque eu não preciso exportar
 //
 func (server *Server) Routes() {
-	server.User()
-
 	server.HandleFunc("/", func(writer http.ResponseWriter, req *http.Request) {
 		writer.Write([]byte("Hello"))
 	}).Methods("GET")
-
 	http.Handle("/", server.Router)
+
+	server.User()
+	http.Handle("/register", server.Router)
 	http.Handle("/user", server.Router)
 }

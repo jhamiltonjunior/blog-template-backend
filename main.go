@@ -27,9 +27,8 @@ func main() {
 		port = ":1289"
 	}
 
-	fmt.Printf("server listen in port%s", port)
-
 	router.NewServer()
 
+	fmt.Printf("server listen in port%s", port)
 	http.ListenAndServe(port, nil)
 }
