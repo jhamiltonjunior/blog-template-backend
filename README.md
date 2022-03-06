@@ -9,7 +9,7 @@ go run main.go
 # Em um projeto real
 
 Eu acredito que em um projeto real, eu mesmo iria hospedar o servidor, sem a necessidade do cliente ter que fazer algum dos seguintes passos. \
-Provavelmente eu iria usar o Google Cloud e ngix. \
+Provavelmente eu iria usar o Google Cloud ou AWS \
 \
 Mas como é um teste, segue o passo a posso de como executar o projeto em sua máquina.
 
@@ -17,7 +17,7 @@ Mas como é um teste, segue o passo a posso de como executar o projeto em sua m�
 
 ## Pré-requisitos
 \
-Você precisará do NodeJS, npm e PostgreSQL instalados em sua máquina. \
+Você precisará do GO, air e PostgreSQL instalados em sua máquina. \
 Existem diferentes maneiras de instalar o NodeJS na sua maquina.\
 E para cada sistema operacional uma maneira diferente. \
 Por isso eu vou listar alguns links do site oficial de instalação do NodeJS.

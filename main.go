@@ -20,17 +20,13 @@ import (
 )
 
 var (
+	err  = godotenv.Load(".env")
 	port = os.Getenv("HTTP_PORT")
 )
 
 func main() {
-	err := godotenv.Load(".env")
 	if err != nil {
 		fmt.Println(err)
-	}
-
-	if port == "" {
-		port = ":1289"
 	}
 
 	router.NewServer()

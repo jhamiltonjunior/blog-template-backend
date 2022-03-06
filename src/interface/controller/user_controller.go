@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 )
 
@@ -31,11 +32,6 @@ type User struct {
 
 func (user *User) CreateUser() http.HandlerFunc {
 	return func(writer http.ResponseWriter, req *http.Request) {
-		config.Open(
-			// "postgres://postgres@localhost/vibbra?sslmode=disable",
-			"user=postgres password=0000 dbname=vibbra sslmode=disable",
-		)
-
 		config.Insert(
 			"INSERT INTO user_schema (username, email, passwd) VALUES($1, $2, $3)",
 			[]string{"Hamilton", "Jose Hamilton", "123"},
@@ -47,12 +43,6 @@ func (user *User) CreateUser() http.HandlerFunc {
 			return
 		}
 
-		// var err error
-		// user.ID, err = uuid.NewUUID()
-		// if err != nil {
-		// 	panic(err)
-		// }
-
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(user); err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -63,10 +53,10 @@ func (user *User) CreateUser() http.HandlerFunc {
 
 }
 
-func (user *User) ShowUser() http.HandlerFunc {
+func (user *User) ListAllUsers() http.HandlerFunc {
 	// done := make(chan string)
 	return func(writer http.ResponseWriter, req *http.Request) {
-		result, err := config.Select("SELECT * FROM user_schema")
+		rows, err := config.Select("SELECT * FROM user_schema")
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			writer.Header().Set("Content-type", "application/json")
@@ -76,23 +66,27 @@ func (user *User) ShowUser() http.HandlerFunc {
 			return
 		}
 
-
-		for result.Next() {
+		for rows.Next() {
 			user := User{}
 
-			err = result.Scan(
+			err = rows.Scan(
 				&user.ID, &user.Name, &user.Email,
 				&user.Password, &user.CreatedAt, &user.UpdatedAt,
 			)
 			if err != nil {
-				err = fmt.Errorf("erro in result.Scan %v", err)
+				err = fmt.Errorf("erro in rows.Scan %v", err)
 
 				http.Error(writer, err.Error(), http.StatusInternalServerError)
 				writer.Header().Set("Content-type", "application/json")
 
 				return
 			}
-
+			
+			// I'm putting the "", to overwrite password,
+			// and don't display it to the end user
+			//
+			// Eu estou colocando o "", para sobrescrever o password,
+			// e não exibir par ao usuário final
 			user.Password = ""
 
 			writer.Header().Set("Content-type", "application/json")
@@ -101,29 +95,33 @@ func (user *User) ShowUser() http.HandlerFunc {
 
 				return
 			}
-
-			fmt.Println(user.ID)
-			fmt.Println(user.Name)
-			fmt.Println(user.Email)
-			fmt.Println(user.CreatedAt)
-			fmt.Println(user.UpdatedAt)
 		}
 
-		err = result.Close()
+		err = rows.Close()
 		if err != nil {
-			err = fmt.Errorf("erro in result.Close %v", err)
+			err = fmt.Errorf("não foi possivel fechar %v", err)
 
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			writer.Header().Set("Content-type", "application/json")
 
 			return
 		}
+	}
+}
 
-		writer.Header().Set("Content-type", "application/json")
-		if err := json.NewEncoder(writer).Encode("result"); err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
+func (user *User) ListUser() http.HandlerFunc {
+	// done := make(chan string)
+	return func(writer http.ResponseWriter, req *http.Request) {
+		params := mux.Vars(req)
 
-			return
-		}
+		// rows, err := config.Select("SELECT * FROM user_schema")
+
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		json.NewEncoder(writer).Encode(map[string]string{
+			"message": fmt.Sprintf("id: %v", params["user_id"]),
+		})
+
+		// fmt.Println(params["id"])
 	}
 }

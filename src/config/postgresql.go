@@ -12,13 +12,13 @@ import (
 func Open(dbsourse string) (db *sqlx.DB, err error) {
 	db, err = sqlx.Open("postgres", dbsourse)
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("erro in open database: %v", err)
 		return
 	}
 
 	err = db.Ping()
 	if err != nil {
-		err = fmt.Errorf("erro no ping, tio: %v", err)
+		err = fmt.Errorf("erro in ping database: %v", err)
 		return
 	}
 
@@ -40,6 +40,7 @@ func Select(sql string) (*sql.Rows, error) {
 
 	result, err := db.Query(sql)
 	if err != nil {
+		err = fmt.Errorf("erro in query database: %v", err)
 		return nil, err
 	}
 
