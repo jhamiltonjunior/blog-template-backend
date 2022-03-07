@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
+	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
 // _, err = db.Exec(sql, values)
@@ -32,11 +32,11 @@ type User struct {
 	// Coloquei Name, porque se eu colocasse UserName quando fosse usar
 	// iria ter que chamar user.UserName e eu não gosto disso
 	//  user.Name já fica subentendido
-	Name      string `json:"username" db:"username"`
-	FullName  string `json:"fullname" db:"fullname"`
-	Email     string `json:"email" db:"email"`
-	Password  string `json:"passwd" db:"passwd"`
-	CreatedAt string `json:"created_at" db:"created_at"`
+	Name      string    `json:"username" db:"username"`
+	FullName  string    `json:"fullname" db:"fullname"`
+	Email     string    `json:"email" db:"email"`
+	Password  string    `json:"passwd" db:"passwd"`
+	CreatedAt string    `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
@@ -60,13 +60,13 @@ type User struct {
 // Não se preocupe
 // Isso poderia ser mudado em uma nova feature
 //
-func (user *User) Create() http.HandlerFunc {
+func (user *User) CreateUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
 		response.Header().Set("Content-Type", "application/json")
 
 		json.NewDecoder(req.Body).Decode(user)
 
-		_, err := config.Insert(
+		_, err := infra.InsertUser(
 			`INSERT INTO user_schema (
 				username, fullname, email, passwd
 			)
@@ -98,9 +98,9 @@ func (user *User) Create() http.HandlerFunc {
 
 }
 
-func (user *User) ListAll() http.HandlerFunc {
+func (user *User) ListAllUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
-		rows, err := config.Select("SELECT * FROM user_schema")
+		rows, err := infra.SelectUser("SELECT * FROM user_schema")
 
 		response.Header().Set("Content-type", "application/json")
 
@@ -115,8 +115,6 @@ func (user *User) ListAll() http.HandlerFunc {
 		}
 
 		for rows.Next() {
-			user := User{}
-
 			err = rows.Scan(
 				&user.ID, &user.Name, &user.FullName, &user.Email,
 				&user.Password, &user.CreatedAt, &user.UpdatedAt,
@@ -164,18 +162,18 @@ func (user *User) ListAll() http.HandlerFunc {
 	}
 }
 
-func (user *User) ListUnique() http.HandlerFunc {
+func (user *User) ListUniqueUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		response.Header().Set("Content-type", "application/json")
-		
+
 		params := mux.Vars(request)
-		
+
 		sql := fmt.Sprintf("SELECT * FROM user_schema WHERE user_id=%v", params["id"])
 
 		// row aqui está no singular pelo fata de que só existe um id para cada user
 		// row here it is singular due to the fact that there is only one id for each user
 		//
-		row, err := config.Select(sql)
+		row, err := infra.SelectUser(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
 
@@ -242,12 +240,12 @@ func (user *User) ListUnique() http.HandlerFunc {
 //
 // Essa função vai atualizar os dados do usuário
 // eu estava usando o insomnia e quando eu atualizei o dado do user 1
-// ele não era mais listado no inicio da função 
+// ele não era mais listado no inicio da função
 //
 //  O ultimo user a ser modificado vai para o final da ListAll()
 //  Pelo menos foi assim comigo usando o Insomnia
-//  
-func (user *User) Update() http.HandlerFunc {
+//
+func (user *User) UpdateUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		response.Header().Set("Content-type", "application/json")
 		params := mux.Vars(request)
@@ -267,7 +265,7 @@ func (user *User) Update() http.HandlerFunc {
 
 		user.UpdatedAt = time.Now()
 
-		_, err := config.Update(
+		_, err := infra.UpdateUser(
 			sql,
 			user.Name, user.FullName, user.Email, user.Password, user.UpdatedAt,
 		)
@@ -285,8 +283,26 @@ func (user *User) Update() http.HandlerFunc {
 	}
 }
 
-func (user *User) Delete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (user *User) DeleteUser() http.HandlerFunc {
+	return func(response http.ResponseWriter, request *http.Request) {
+		response.Header().Set("Content-Type", "application/json")
 
+		params := mux.Vars(request)
+		sql := fmt.Sprintf("DELETE FROM user_schema WHERE user_id=%v", params["id"])
+
+		_, err := infra.DeleteUser(sql)
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+
+			json.NewEncoder(response).Encode(map[string]string{
+				"Fail": fmt.Sprintf("Error when deleting user: %v", err),
+			})
+
+			return
+		}
+
+		json.NewEncoder(response).Encode(map[string]string{
+			"message": "User deleted with success!",
+		})
 	}
 }

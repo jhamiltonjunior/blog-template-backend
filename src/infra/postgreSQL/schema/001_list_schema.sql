@@ -19,8 +19,8 @@ CREATE TABLE list_schema(
         ON UPDATE CASCADE
 );
 
-INSERT INTO list_schema (title, description, user_id)
-VALUES ('Primeira lista', 'começar o projeto', 1);
+INSERT INTO list_schema (title, user_id)
+VALUES ('Projeto Vibbra', 1);
 
-INSERT INTO list_schema (title, description, user_id)
-VALUES ('Mais um', 'lembrar de falar com a julia' 2);
+INSERT INTO list_schema (title, user_id)
+VALUES ('Entrar em contato com o sr vibbraneo', 2);

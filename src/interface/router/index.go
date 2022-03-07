@@ -35,5 +35,6 @@ func (server *Server) routes() {
 	// Eu preciso passar o server.Router como segundo parametro
 	//
 	server.User()
+	server.List()
 	http.Handle("/", server.Router)
 }

@@ -1,3 +1,8 @@
+/*
+  Se quiser deletar essa tabela primeiro vai ter
+  que deletar as outras tabelas primeiro
+*/
+
 DROP TABLE IF EXISTS user_schema;
 
 CREATE TABLE user_schema(
