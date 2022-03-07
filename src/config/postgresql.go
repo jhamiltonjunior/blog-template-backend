@@ -22,7 +22,20 @@ func Open(dbsourse string) (db *sqlx.DB, err error) {
 	return
 }
 
-func Insert(sql string, values []string) {
+func Insert(sql , username, fullname, email, passwd string) (sql.Result, error) {
+	db, err := Open(
+		os.Getenv("DB_SOURCE"),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := db.Exec(sql, username, fullname, email, passwd)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 
 }
 

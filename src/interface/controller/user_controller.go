@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -32,36 +33,52 @@ type User struct {
 
 func (user *User) CreateUser() http.HandlerFunc {
 	return func(writer http.ResponseWriter, req *http.Request) {
-		config.Insert(
-			"INSERT INTO user_schema (username, email, passwd) VALUES($1, $2, $3)",
-			[]string{"Hamilton", "Jose Hamilton", "123"},
-		)
-
-		if err := json.NewDecoder(req.Body).Decode(&user); err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
-
-			return
-		}
-
 		writer.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(writer).Encode(user); err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
+
+		body, _ := ioutil.ReadAll(req.Body)
+
+		// fmt.Println(string(body))
+
+		row, err := config.Insert(
+			`INSERT INTO user_schema (
+				username, fullname, email, passwd
+			)
+			VALUES ($1, $2, $3, $4)
+			RETURNING *`,
+			// []string{"hamilton", "José Hamilton", "jose@hamilton.com", "123"},
+			"hamilton", "José Hamilton", "jose@hamilton.com", "123",
+		)
+		if err != nil {
+			writer.WriteHeader(http.StatusInternalServerError)
+
+			json.NewEncoder(writer).Encode(map[string]string{
+				"message": fmt.Sprintf("erro in Insert: %v", err),
+			})
 
 			return
 		}
+
+		// 	namedSQL := `INSERT INTO "clients" ("name","address") VALUES (:name,:address)`
+
+		// _, err = db.NamedExec(namedSQL,
+		// 	client{
+		// 		Name:    "Cyberdyne Systems",
+		// 		Address: "2144 Kramer St",
+		// 	})
+
+		json.NewEncoder(writer).Encode(row)
 	}
 
 }
 
 func (user *User) ListAllUsers() http.HandlerFunc {
-	// done := make(chan string)
 	return func(writer http.ResponseWriter, req *http.Request) {
 		rows, err := config.Select("SELECT * FROM user_schema")
 
 		writer.Header().Set("Content-type", "application/json")
 
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			writer.WriteHeader(http.StatusInternalServerError)
 
 			json.NewEncoder(writer).Encode(map[string]string{
 				"message": fmt.Sprintf("erro in Select query: %v", err),
@@ -78,7 +95,7 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 				&user.Password, &user.CreatedAt, &user.UpdatedAt,
 			)
 			if err != nil {
-				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				writer.WriteHeader(http.StatusInternalServerError)
 
 				json.NewEncoder(writer).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in row scan: %v", err),
@@ -97,7 +114,7 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 			user.Password = ""
 
 			if err := json.NewEncoder(writer).Encode(user); err != nil {
-				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				writer.WriteHeader(http.StatusInternalServerError)
 
 				json.NewEncoder(writer).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in new encode json: %v", err),
@@ -109,7 +126,7 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 
 		err = rows.Close()
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			writer.WriteHeader(http.StatusInternalServerError)
 
 			json.NewEncoder(writer).Encode(map[string]string{
 				"message": fmt.Sprintf("erro in close rows: %v", err),
@@ -121,7 +138,6 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 }
 
 func (user *User) ListUser() http.HandlerFunc {
-	// done := make(chan string)
 	return func(writer http.ResponseWriter, req *http.Request) {
 		params := mux.Vars(req)
 		query := fmt.Sprintf("SELECT * FROM user_schema WHERE user_id=%v", params["user_id"])
@@ -133,10 +149,10 @@ func (user *User) ListUser() http.HandlerFunc {
 		//
 		row, err := config.Select(query)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			writer.WriteHeader(http.StatusInternalServerError)
 
-			json.NewEncoder(writer).Encode([]string{
-				fmt.Sprintf("erro in Select query: %v", err),
+			json.NewEncoder(writer).Encode(map[string]string{
+				"message": fmt.Sprintf("erro in Select query: %v", err),
 			})
 
 			return
@@ -147,13 +163,14 @@ func (user *User) ListUser() http.HandlerFunc {
 				&user.ID, &user.Name, &user.Email,
 				&user.Password, &user.CreatedAt, &user.UpdatedAt,
 			)
-
 			if err != nil {
-				json.NewEncoder(writer).Encode([]string{
-					fmt.Sprintf("erro in row scan: %v", err),
+				writer.WriteHeader(http.StatusInternalServerError)
+
+				json.NewEncoder(writer).Encode(map[string]string{
+					"message": fmt.Sprintf("erro in row scan: %v", err),
 				})
 			}
-			
+
 			// I'm putting the "", to overwrite password,
 			// and don't display it to the end user
 			// please do not use this in frontend application
@@ -165,7 +182,7 @@ func (user *User) ListUser() http.HandlerFunc {
 
 			err = json.NewEncoder(writer).Encode(user)
 			if err != nil {
-				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				writer.WriteHeader(http.StatusInternalServerError)
 
 				json.NewEncoder(writer).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in new encode json: %v", err),
@@ -176,7 +193,7 @@ func (user *User) ListUser() http.HandlerFunc {
 
 			err = row.Close()
 			if err != nil {
-				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				writer.WriteHeader(http.StatusInternalServerError)
 
 				json.NewEncoder(writer).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in close row: %v", err),
@@ -185,5 +202,11 @@ func (user *User) ListUser() http.HandlerFunc {
 				return
 			}
 		}
+	}
+}
+
+func (user *User) UpdateUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
 	}
 }

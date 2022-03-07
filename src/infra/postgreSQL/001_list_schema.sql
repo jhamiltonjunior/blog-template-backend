@@ -7,7 +7,6 @@ CREATE TABLE list_schema(
   list_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   
   title TEXT NOT NULL,
-  description TEXT NOT NULL,
   checked BOOLEAN DEFAULT false,
   
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,

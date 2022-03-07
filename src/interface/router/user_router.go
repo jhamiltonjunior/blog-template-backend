@@ -21,17 +21,10 @@ func (server *Server) User() {
 	user := controller.User{}
 
 	server.HandleFunc("/api/v1/user", user.ListAllUsers()).Methods("GET")
-	
-	// server.HandleFunc("/api/v1/user/{id}", user.ListUser()).Methods("GET")
-
-
-	server.HandleFunc("/api/v1/user/{user_id:[0-9]+}", user.ListUser()).Methods("GET")
-
-
-
 	server.HandleFunc("/api/v1/user", user.CreateUser()).Methods("POST")
 
-	server.HandleFunc("/api/v1/user/{id:[0-9]+}", user.CreateUser()).Methods("PUT")
+	server.HandleFunc("/api/v1/user/{id:[0-9]+}", user.ListUser()).Methods("GET")
+	server.HandleFunc("/api/v1/user/{id:[0-9]+}", user.UpdateUser()).Methods("PUT")
 
 	// server.HandleFunc("/api/v1/user/{id}", user.CreateUser()).Methods("DELETE")
 }
