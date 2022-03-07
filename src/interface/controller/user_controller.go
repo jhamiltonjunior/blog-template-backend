@@ -37,7 +37,7 @@ func (user *User) CreateUser() http.HandlerFunc {
 
 		body, _ := ioutil.ReadAll(req.Body)
 
-		// fmt.Println(string(body))
+		fmt.Println(string(body))
 
 		row, err := config.Insert(
 			`INSERT INTO user_schema (
