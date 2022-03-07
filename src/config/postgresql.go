@@ -3,6 +3,7 @@ package config
 import (
 	"database/sql"
 	"os"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -22,7 +23,7 @@ func Open(dbsourse string) (db *sqlx.DB, err error) {
 	return
 }
 
-func Insert(sql , username, fullname, email, passwd string) (sql.Result, error) {
+func Insert(sql, username, fullname, email, passwd string) (sql.Result, error) {
 	db, err := Open(
 		os.Getenv("DB_SOURCE"),
 	)
@@ -54,4 +55,21 @@ func Select(sql string) (*sql.Rows, error) {
 	}
 
 	return result, nil
+}
+
+func Update(sql, username, fullname, email, passwd string, updateAt time.Time) (sql.Result, error) {
+	db, err := Open(
+		os.Getenv("DB_SOURCE"),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := db.Exec(sql, username, fullname, email, passwd, updateAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
 }

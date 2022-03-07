@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
@@ -36,7 +37,7 @@ type User struct {
 	Email     string `json:"email" db:"email"`
 	Password  string `json:"passwd" db:"passwd"`
 	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // There is an error here in returning user data
@@ -59,9 +60,9 @@ type User struct {
 // Não se preocupe
 // Isso poderia ser mudado em uma nova feature
 //
-func (user *User) CreateUser() http.HandlerFunc {
-	return func(writer http.ResponseWriter, req *http.Request) {
-		writer.Header().Set("Content-Type", "application/json")
+func (user *User) Create() http.HandlerFunc {
+	return func(response http.ResponseWriter, req *http.Request) {
+		response.Header().Set("Content-Type", "application/json")
 
 		json.NewDecoder(req.Body).Decode(user)
 
@@ -74,9 +75,9 @@ func (user *User) CreateUser() http.HandlerFunc {
 			user.Name, user.FullName, user.Email, user.Password,
 		)
 		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
+			response.WriteHeader(http.StatusInternalServerError)
 
-			json.NewEncoder(writer).Encode(map[string]string{
+			json.NewEncoder(response).Encode(map[string]string{
 				"message": fmt.Sprintf("erro in Insert in create user: %v", err),
 			})
 
@@ -92,21 +93,21 @@ func (user *User) CreateUser() http.HandlerFunc {
 		// por favor não use isso no frontend
 		user.Password = ""
 
-		json.NewEncoder(writer).Encode(user)
+		json.NewEncoder(response).Encode(user)
 	}
 
 }
 
-func (user *User) ListAllUsers() http.HandlerFunc {
-	return func(writer http.ResponseWriter, req *http.Request) {
+func (user *User) ListAll() http.HandlerFunc {
+	return func(response http.ResponseWriter, req *http.Request) {
 		rows, err := config.Select("SELECT * FROM user_schema")
 
-		writer.Header().Set("Content-type", "application/json")
+		response.Header().Set("Content-type", "application/json")
 
 		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
+			response.WriteHeader(http.StatusInternalServerError)
 
-			json.NewEncoder(writer).Encode(map[string]string{
+			json.NewEncoder(response).Encode(map[string]string{
 				"message": fmt.Sprintf("erro in select query, in select all users: %v", err),
 			})
 
@@ -121,9 +122,9 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 				&user.Password, &user.CreatedAt, &user.UpdatedAt,
 			)
 			if err != nil {
-				writer.WriteHeader(http.StatusInternalServerError)
+				response.WriteHeader(http.StatusInternalServerError)
 
-				json.NewEncoder(writer).Encode(map[string]string{
+				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in row scan: %v", err),
 				})
 
@@ -139,10 +140,10 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 			// por favor não use isso no frontend
 			user.Password = ""
 
-			if err := json.NewEncoder(writer).Encode(user); err != nil {
-				writer.WriteHeader(http.StatusInternalServerError)
+			if err := json.NewEncoder(response).Encode(user); err != nil {
+				response.WriteHeader(http.StatusInternalServerError)
 
-				json.NewEncoder(writer).Encode(map[string]string{
+				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in new encode json: %v", err),
 				})
 
@@ -152,9 +153,9 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 
 		err = rows.Close()
 		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
+			response.WriteHeader(http.StatusInternalServerError)
 
-			json.NewEncoder(writer).Encode(map[string]string{
+			json.NewEncoder(response).Encode(map[string]string{
 				"message": fmt.Sprintf("erro in close rows: %v", err),
 			})
 
@@ -163,21 +164,22 @@ func (user *User) ListAllUsers() http.HandlerFunc {
 	}
 }
 
-func (user *User) ListUser() http.HandlerFunc {
-	return func(writer http.ResponseWriter, req *http.Request) {
-		params := mux.Vars(req)
-		query := fmt.Sprintf("SELECT * FROM user_schema WHERE user_id=%v", params["id"])
-
-		writer.Header().Set("Content-type", "application/json")
+func (user *User) ListUnique() http.HandlerFunc {
+	return func(response http.ResponseWriter, request *http.Request) {
+		response.Header().Set("Content-type", "application/json")
+		
+		params := mux.Vars(request)
+		
+		sql := fmt.Sprintf("SELECT * FROM user_schema WHERE user_id=%v", params["id"])
 
 		// row aqui está no singular pelo fata de que só existe um id para cada user
 		// row here it is singular due to the fact that there is only one id for each user
 		//
-		row, err := config.Select(query)
+		row, err := config.Select(sql)
 		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
+			response.WriteHeader(http.StatusInternalServerError)
 
-			json.NewEncoder(writer).Encode(map[string]string{
+			json.NewEncoder(response).Encode(map[string]string{
 				"message": fmt.Sprintf("erro in select query, in select unique user: %v", err),
 			})
 
@@ -190,9 +192,9 @@ func (user *User) ListUser() http.HandlerFunc {
 				&user.Password, &user.CreatedAt, &user.UpdatedAt,
 			)
 			if err != nil {
-				writer.WriteHeader(http.StatusInternalServerError)
+				response.WriteHeader(http.StatusInternalServerError)
 
-				json.NewEncoder(writer).Encode(map[string]string{
+				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in row scan: %v", err),
 				})
 			}
@@ -206,11 +208,11 @@ func (user *User) ListUser() http.HandlerFunc {
 			// por favor não use isso no frontend
 			user.Password = ""
 
-			err = json.NewEncoder(writer).Encode(user)
+			err = json.NewEncoder(response).Encode(user)
 			if err != nil {
-				writer.WriteHeader(http.StatusInternalServerError)
+				response.WriteHeader(http.StatusInternalServerError)
 
-				json.NewEncoder(writer).Encode(map[string]string{
+				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in new encode json: %v", err),
 				})
 
@@ -219,9 +221,9 @@ func (user *User) ListUser() http.HandlerFunc {
 
 			err = row.Close()
 			if err != nil {
-				writer.WriteHeader(http.StatusInternalServerError)
+				response.WriteHeader(http.StatusInternalServerError)
 
-				json.NewEncoder(writer).Encode(map[string]string{
+				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("erro in close row: %v", err),
 				})
 
@@ -231,7 +233,59 @@ func (user *User) ListUser() http.HandlerFunc {
 	}
 }
 
-func (user *User) UpdateUser() http.HandlerFunc {
+// This function will update the user data
+// I was using insomnia and when I updated user data 1
+// it was no longer listed at the beginning of the function
+//
+//  The last user to be modified goes to the end of ListAll()
+//  At least that is how it was for me using *Insomnia*
+//
+// Essa função vai atualizar os dados do usuário
+// eu estava usando o insomnia e quando eu atualizei o dado do user 1
+// ele não era mais listado no inicio da função 
+//
+//  O ultimo user a ser modificado vai para o final da ListAll()
+//  Pelo menos foi assim comigo usando o Insomnia
+//  
+func (user *User) Update() http.HandlerFunc {
+	return func(response http.ResponseWriter, request *http.Request) {
+		response.Header().Set("Content-type", "application/json")
+		params := mux.Vars(request)
+
+		sql := fmt.Sprintf(`
+			UPDATE user_schema
+      SET
+      username = $1,
+      fullname = $2,
+      email = $3,
+      passwd = $4,
+			updated_at = $5
+      WHERE user_id = %v RETURNING *
+		`, params["id"])
+
+		json.NewDecoder(request.Body).Decode(user)
+
+		user.UpdatedAt = time.Now()
+
+		_, err := config.Update(
+			sql,
+			user.Name, user.FullName, user.Email, user.Password, user.UpdatedAt,
+		)
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+
+			json.NewEncoder(response).Encode(map[string]string{
+				"message": fmt.Sprintf("Erro in update user: %v", err),
+			})
+
+			return
+		}
+
+		json.NewEncoder(response).Encode(user)
+	}
+}
+
+func (user *User) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
