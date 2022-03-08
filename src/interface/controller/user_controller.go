@@ -96,6 +96,7 @@ func (user *User) CreateUser() http.HandlerFunc {
 		// por favor não use isso no frontend
 		user.Password = ""
 
+		response.WriteHeader(http.StatusCreated)
 		json.NewEncoder(response).Encode(user)
 	}
 
