@@ -21,4 +21,4 @@ INSERT INTO user_schema (username, fullname, email, passwd)
 VALUES ('Hamilton', 'José Hamilton', 'hamilton@gmail.com', '12345');
 
 INSERT INTO user_schema (username, fullname, email, passwd)
-VALUES ('jose', 'Luiz Ricardo', 'jose@gmail.com', '123456');
+VALUES ('vibbraneo', 'Vibbraneo da Cunha', 'vibbraneo@vibbra.com.br', '123456');

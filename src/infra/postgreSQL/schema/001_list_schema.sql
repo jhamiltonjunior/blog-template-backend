@@ -16,7 +16,7 @@ CREATE TABLE list_schema(
 );
 
 INSERT INTO list_schema (title, user_id)
-VALUES ('Projeto Vibbra', 1);
+VALUES ('Projeto Vibbra', 2);
 
 INSERT INTO list_schema (title, user_id)
-VALUES ('Entrar em contato com o sr vibbraneo', 2);
+VALUES ('Entrar em contato com o sr vibbraneo', 1);

@@ -10,9 +10,9 @@ import (
 )
 
 type List struct {
-	ID                int    `json:"list_id" db:"list_id"`
-	Title             string `json:"title" db:"title"`
-	UserId            int    `json:"user_id" db:"user_id"`
+	ID     int    `json:"list_id" db:"list_id"`
+	Title  string `json:"title" db:"title"`
+	UserId int    `json:"user_id" db:"user_id"`
 }
 
 func (list *List) CreateList() http.HandlerFunc {
