@@ -93,7 +93,7 @@ func (listItem *ListItem) ShowListItem() http.HandlerFunc {
 				return
 			}
 
-			// items = append(items, *listItem)
+			items = append(items, *listItem)
 
 			json.NewEncoder(response).Encode(items)
 		}
