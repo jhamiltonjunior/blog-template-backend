@@ -4,19 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
 type List struct {
-	ID        int       `json:"list_id" db:"list_id"`
-	Title     string    `json:"title" db:"title"`
-	Checked   bool      `json:"checked" db:"checked"`
-	UserId    int       `json:"user_id" db:"user_id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID                int    `json:"list_id" db:"list_id"`
+	Title             string `json:"title" db:"title"`
+	UserId            int    `json:"user_id" db:"user_id"`
 }
 
 func (list *List) CreateList() http.HandlerFunc {
@@ -43,6 +39,7 @@ func (list *List) CreateList() http.HandlerFunc {
 			return
 		}
 
+		response.WriteHeader(http.StatusCreated)
 		json.NewEncoder(response).Encode(list)
 	}
 
@@ -72,8 +69,7 @@ func (list *List) ShowList() http.HandlerFunc {
 
 		for row.Next() {
 			err = row.Scan(
-				&list.ID, &list.Title, &list.Checked,
-				&list.UserId, &list.CreatedAt, &list.UpdatedAt,
+				&list.ID, &list.Title, &list.UserId,
 			)
 			if err != nil {
 				response.WriteHeader(http.StatusInternalServerError)
@@ -81,6 +77,8 @@ func (list *List) ShowList() http.HandlerFunc {
 				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("Row scan: %v", err),
 				})
+
+				return
 			}
 
 			err = row.Close()
@@ -90,11 +88,34 @@ func (list *List) ShowList() http.HandlerFunc {
 				json.NewEncoder(response).Encode(map[string]string{
 					"message": fmt.Sprintf("Close row: %v", err),
 				})
-				
+
 				return
 			}
-
 			json.NewEncoder(response).Encode(list)
 		}
+	}
+}
+
+func (list *List) DeleteList() http.HandlerFunc {
+	return func(response http.ResponseWriter, request *http.Request) {
+		response.Header().Set("Content-Type", "application/json")
+
+		params := mux.Vars(request)
+		sql := fmt.Sprintf("DELETE FROM list_schema WHERE list_id=%v", params["id"])
+
+		_, err := infra.DeleteList(sql)
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+
+			json.NewEncoder(response).Encode(map[string]string{
+				"Fail": fmt.Sprintf("Error when deleting user: %v", err),
+			})
+
+			return
+		}
+
+		json.NewEncoder(response).Encode(map[string]string{
+			"message": "List deleted with success!",
+		})
 	}
 }

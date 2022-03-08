@@ -81,6 +81,9 @@ func (user *User) CreateUser() http.HandlerFunc {
 				"message": fmt.Sprintf("erro in Insert in create user: %v", err),
 			})
 
+			// the return after the error the application continues that prevents
+			// 
+			// o return impede que após o erro a aplização continue executando
 			return
 		}
 

@@ -6,11 +6,7 @@ DROP TABLE IF EXISTS list_schema;
 CREATE TABLE list_schema(
   list_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   
-  title TEXT NOT NULL,
-  checked BOOLEAN DEFAULT false,
-  
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW(),
+  title VARCHAR(60) NOT NULL,
   
   user_id INT,
   FOREIGN KEY(user_id)
