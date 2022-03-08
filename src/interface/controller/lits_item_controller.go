@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
@@ -117,21 +118,23 @@ func (listItem *ListItem) UpdateListItem() http.HandlerFunc {
 
 func (listItem *ListItem) DeleteListItem() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		// params := mux.Vars(request)
-		// sql := fmt.Sprintf(
-		// 	"DELETE FROM list_item_schema WHERE list_id=%v AND list_item_id=%v",
-		// 	params["id"], params["item_id"])
+		params := mux.Vars(request)
+		sql := fmt.Sprintf(
+			`DELETE FROM list_item_schema 	
+			WHERE list_id=%v AND list_item_id=%v`,
 
-		// _, err := config.Delete(sql)
-		// if err != nil {
-		// 	response.WriteHeader(http.StatusInternalServerError)
+			params["id"], params["item_id"])
 
-		// 	json.NewEncoder(response).Encode(map[string]string{
-		// 		"Fail": fmt.Sprintf("Error when deleting user: %v", err),
-		// 	})
+		_, err := config.Delete(sql)
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
 
-		// 	return
-		// }
+			json.NewEncoder(response).Encode(map[string]string{
+				"Fail": fmt.Sprintf("Error when deleting user: %v", err),
+			})
+
+			return
+		}
 
 		json.NewEncoder(response).Encode(map[string]string{
 			"message": "Item deleted with success!",

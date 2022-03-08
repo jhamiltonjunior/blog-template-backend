@@ -59,7 +59,7 @@ Você pode ver uma lista de downloads do site oficial do PostgreSQL
 
 # Para iniciar o projeto em sua máquina
 ## Abra um terminal e execute os comandos
-``` bash
+```bash
 git clone <link_do_repositório>
 cd vibbra-test
 npm i
