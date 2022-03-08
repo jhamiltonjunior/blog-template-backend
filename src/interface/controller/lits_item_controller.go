@@ -11,12 +11,12 @@ import (
 )
 
 type ListItem struct {
-	ID          int        `json:"list_item_id" db:"list_item_id"`
-	UserId      int        `json:"user_id" db:"user_id"`
-	ListId      int        `json:"list_id" db:"list_id"`
-	Title       string     `json:"title" db:"title"`
-	Description string     `json:"description" db:"description"`
-	CreatedAt   string     `json:"created_at" db:"created_at"`
+	ID          int       `json:"list_item_id" db:"list_item_id"`
+	UserId      int       `json:"user_id" db:"user_id"`
+	ListId      int       `json:"list_id" db:"list_id"`
+	Title       string    `json:"title" db:"title"`
+	Description string    `json:"description" db:"description"`
+	CreatedAt   string    `json:"created_at" db:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at" db:"updated_at"`
 }
 
@@ -57,7 +57,7 @@ func (listItem *ListItem) ShowListItem() http.HandlerFunc {
 		// row aqui está no singular pelo fata de que só existe um id para cada user
 		// row here it is singular due to the fact that there is only one id for each user
 		//
-		row, err := infra.SelectListItem(sql)
+		db, err := infra.SelectListItem(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
 
@@ -68,41 +68,56 @@ func (listItem *ListItem) ShowListItem() http.HandlerFunc {
 			return
 		}
 
-		for row.Next() {
-			err = row.StructScan(
-				listItem,
-			)
-			if err != nil {
-				response.WriteHeader(http.StatusInternalServerError)
+		err = db.Select(&items, sql)
+		if err != nil {
+			json.NewEncoder(response).Encode(map[string]string{
+				"message": fmt.Sprintf("%v", err),
+			})
 
-				json.NewEncoder(response).Encode(map[string]string{
-					"message": fmt.Sprintf("Row scan: %v", err),
-				})
-
-				return
-			}
-
-			err = row.Close()
-			if err != nil {
-				response.WriteHeader(http.StatusInternalServerError)
-
-				json.NewEncoder(response).Encode(map[string]string{
-					"message": fmt.Sprintf("Close row: %v", err),
-				})
-
-				return
-			}
-
-			items = append(items, *listItem)
-
-			json.NewEncoder(response).Encode(items)
+			return
 		}
+
+		json.NewEncoder(response).Encode(items)
 	}
 }
 
 func (listItem *ListItem) UpdateListItem() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
+		params := mux.Vars(request)
+		fmt.Println(params["list_id"])
 
+		sql := fmt.Sprintf(`
+			UPDATE list_item_schema
+      SET
+      title = $1,
+      description = $2,
+      user_id = $3,
+      list_id = $4,
+			updated_at = $5
+      WHERE user_id = %v RETURNING *
+		`, params["id"])
+
+		json.NewDecoder(request.Body).Decode(listItem)
+
+		// listItem.UpdatedAt = time.Now()
+
+		now := time.Now()
+
+		_, err := infra.UpdateListItem(
+			sql,
+			listItem.Title, listItem.Description, listItem.UserId, listItem.ListId, now,
+		)
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+
+			json.NewEncoder(response).Encode(map[string]string{
+				"message": fmt.Sprintf(": %v", err),
+			})
+
+			return
+		}
+
+		json.NewEncoder(response).Encode(listItem)
 	}
 }
 

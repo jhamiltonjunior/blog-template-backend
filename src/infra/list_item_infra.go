@@ -3,12 +3,15 @@ package infra
 import (
 	"database/sql"
 	"os"
+	"time"
 
 	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 	"github.com/jmoiron/sqlx"
 )
 
-func SelectListItem(sql string) (*sqlx.Rows, error) {
+// Eu estou usando essa função aqui apesar dela não ser tão necessária,
+//  Mas isso evita deixar o list_item_controller.go verboso
+func SelectListItem(sql string) (*sqlx.DB, error) {
 
 	db, err := config.Open(
 		os.Getenv("DB_SOURCE"),
@@ -17,12 +20,7 @@ func SelectListItem(sql string) (*sqlx.Rows, error) {
 		return nil, err
 	}
 
-	result, err := db.Queryx(sql)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return db, nil
 }
 
 func InsertListItem(sql string, userId, listId int, title, description string) (sql.Result, error) {
@@ -42,7 +40,7 @@ func InsertListItem(sql string, userId, listId int, title, description string) (
 
 }
 
-func UpdateListItem(sql, title, description string) (sql.Result, error) {
+func UpdateListItem(sql, title, description string, userId, listId int, UpdatedAt time.Time) (sql.Result, error) {
 	db, err := config.Open(
 		os.Getenv("DB_SOURCE"),
 	)
@@ -51,7 +49,7 @@ func UpdateListItem(sql, title, description string) (sql.Result, error) {
 		return nil, err
 	}
 
-	result, err := db.Exec(sql, title, description)
+	result, err := db.Exec(sql, title, description, userId, listId, UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
