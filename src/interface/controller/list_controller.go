@@ -17,8 +17,6 @@ type List struct {
 
 func (list *List) CreateList() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
-		response.Header().Set("Content-Type", "application/json")
-
 		json.NewDecoder(req.Body).Decode(list)
 
 		_, err := infra.InsertList(
@@ -47,8 +45,6 @@ func (list *List) CreateList() http.HandlerFunc {
 
 func (list *List) ShowList() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		response.Header().Set("Content-type", "application/json")
-
 		params := mux.Vars(request)
 
 		sql := fmt.Sprintf("SELECT * FROM list_schema WHERE list_id=%v", params["id"])
@@ -98,8 +94,6 @@ func (list *List) ShowList() http.HandlerFunc {
 
 func (list *List) DeleteList() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		response.Header().Set("Content-Type", "application/json")
-
 		params := mux.Vars(request)
 		sql := fmt.Sprintf("DELETE FROM list_schema WHERE list_id=%v", params["id"])
 

@@ -103,10 +103,8 @@ func (user *User) CreateUser() http.HandlerFunc {
 }
 
 func (user *User) ListAllUser() http.HandlerFunc {
-	return func(response http.ResponseWriter, req *http.Request) {
+	return func(response http.ResponseWriter, request *http.Request) {
 		rows, err := infra.SelectUser("SELECT * FROM user_schema")
-
-		response.Header().Set("Content-type", "application/json")
 
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
@@ -168,8 +166,6 @@ func (user *User) ListAllUser() http.HandlerFunc {
 
 func (user *User) ListUniqueUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		response.Header().Set("Content-type", "application/json")
-
 		params := mux.Vars(request)
 
 		sql := fmt.Sprintf("SELECT * FROM user_schema WHERE user_id=%v", params["id"])
@@ -251,7 +247,6 @@ func (user *User) ListUniqueUser() http.HandlerFunc {
 //
 func (user *User) UpdateUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		response.Header().Set("Content-type", "application/json")
 		params := mux.Vars(request)
 
 		sql := fmt.Sprintf(`
@@ -289,8 +284,6 @@ func (user *User) UpdateUser() http.HandlerFunc {
 
 func (user *User) DeleteUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		response.Header().Set("Content-Type", "application/json")
-
 		params := mux.Vars(request)
 		sql := fmt.Sprintf("DELETE FROM user_schema WHERE user_id=%v", params["id"])
 

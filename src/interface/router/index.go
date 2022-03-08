@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jhamiltonjunior/priza-tech-backend/src/interface/middleware"
 )
 
 type Server struct {
@@ -25,8 +26,11 @@ func NewServer() *Server {
 //rotas é minúscula porque não preciso exportar
 //
 func (server *Server) routes() {
-	// middleware := server.Router
-	// middleware.Use()
+	middlewares := server.Router
+	middlewares.Use(middleware.SetContentType)
+
+	server.User()
+	server.List()
 
 	// This is a gorilla/mux requirement
 	// I need to pass the server.Router as the second parameter
@@ -34,7 +38,5 @@ func (server *Server) routes() {
 	// Isso aqui é um requisito do gorilla/mux
 	// Eu preciso passar o server.Router como segundo parametro
 	//
-	server.User()
-	server.List()
 	http.Handle("/", server.Router)
 }
