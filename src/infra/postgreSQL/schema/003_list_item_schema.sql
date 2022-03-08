@@ -7,7 +7,6 @@ CREATE TABLE list_item_schema(
   
   title VARCHAR(60) NOT NULL,
   description TEXT NOT NULL,
-  checked BOOLEAN DEFAULT false,
   
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NULL,

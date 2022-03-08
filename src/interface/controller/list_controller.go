@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
@@ -52,7 +53,7 @@ func (list *List) ShowList() http.HandlerFunc {
 		// row aqui está no singular pelo fata de que só existe um id para cada user
 		// row here it is singular due to the fact that there is only one id for each user
 		//
-		row, err := infra.SelectList(sql)
+		row, err := config.Select(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
 
@@ -97,7 +98,7 @@ func (list *List) DeleteList() http.HandlerFunc {
 		params := mux.Vars(request)
 		sql := fmt.Sprintf("DELETE FROM list_schema WHERE list_id=%v", params["id"])
 
-		_, err := infra.DeleteList(sql)
+		_, err := config.Delete(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
 

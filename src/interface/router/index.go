@@ -31,6 +31,7 @@ func (server *Server) routes() {
 
 	server.User()
 	server.List()
+	server.ListItem()
 
 	// This is a gorilla/mux requirement
 	// I need to pass the server.Router as the second parameter

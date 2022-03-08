@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
@@ -104,7 +105,7 @@ func (user *User) CreateUser() http.HandlerFunc {
 
 func (user *User) ListAllUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		rows, err := infra.SelectUser("SELECT * FROM user_schema")
+		rows, err := config.Select("SELECT * FROM user_schema")
 
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
@@ -173,7 +174,7 @@ func (user *User) ListUniqueUser() http.HandlerFunc {
 		// row aqui está no singular pelo fata de que só existe um id para cada user
 		// row here it is singular due to the fact that there is only one id for each user
 		//
-		row, err := infra.SelectUser(sql)
+		row, err := config.Select(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
 
@@ -287,7 +288,7 @@ func (user *User) DeleteUser() http.HandlerFunc {
 		params := mux.Vars(request)
 		sql := fmt.Sprintf("DELETE FROM user_schema WHERE user_id=%v", params["id"])
 
-		_, err := infra.DeleteUser(sql)
+		_, err := config.Delete(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
 

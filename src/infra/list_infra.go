@@ -24,23 +24,6 @@ func InsertList(sql, title string,  userId int) (sql.Result, error) {
 
 }
 
-func SelectList(sql string) (*sql.Rows, error) {
-
-	db, err := config.Open(
-		os.Getenv("DB_SOURCE"),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	result, err := db.Query(sql)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
 func UpdateList(sql, title string, checked bool) (sql.Result, error) {
 	db, err := config.Open(
 		os.Getenv("DB_SOURCE"),
@@ -57,18 +40,3 @@ func UpdateList(sql, title string, checked bool) (sql.Result, error) {
 	return result, nil
 }
 
-func DeleteList(sql string) (sql.Result, error) {
-	db, err := config.Open(
-		os.Getenv("DB_SOURCE"),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	result, err := db.Exec(sql)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
