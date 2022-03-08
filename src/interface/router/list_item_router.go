@@ -11,10 +11,10 @@ func (server *Server) ListItem() {
 	server.HandleFunc("/api/v1/list/{id:[0-9]+}/item", listItem.CreateListItem()).Methods("POST")
 
 	server.HandleFunc(
-		"/api/v1/list/{id:[0-9]+}/item/{list_id:[0-9]+}", listItem.UpdateListItem(),
+		"/api/v1/list/{id:[0-9]+}/item/{item_id:[0-9]+}", listItem.UpdateListItem(),
 	).Methods("PUT")
 
 	server.HandleFunc(
-		"/api/v1/list/{id:[0-9]+}/item/{list_id:[0-9]+}", listItem.DeleteListItem(),
+		"/api/v1/list/{id:[0-9]+}/item/{item_id:[0-9]+}", listItem.DeleteListItem(),
 	).Methods("DELETE")
 }

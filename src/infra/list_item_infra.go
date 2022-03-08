@@ -3,7 +3,6 @@ package infra
 import (
 	"database/sql"
 	"os"
-	"time"
 
 	"github.com/jhamiltonjunior/priza-tech-backend/src/config"
 	"github.com/jmoiron/sqlx"
@@ -40,7 +39,7 @@ func InsertListItem(sql string, userId, listId int, title, description string) (
 
 }
 
-func UpdateListItem(sql, title, description string, userId, listId int, UpdatedAt time.Time) (sql.Result, error) {
+func UpdateListItem(sql, title, description string, userId, listId int) (sql.Result, error) {
 	db, err := config.Open(
 		os.Getenv("DB_SOURCE"),
 	)
@@ -49,7 +48,7 @@ func UpdateListItem(sql, title, description string, userId, listId int, UpdatedA
 		return nil, err
 	}
 
-	result, err := db.Exec(sql, title, description, userId, listId, UpdatedAt)
+	result, err := db.Exec(sql, title, description, userId, listId)
 	if err != nil {
 		return nil, err
 	}

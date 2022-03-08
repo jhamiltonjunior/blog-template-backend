@@ -4,20 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
 type ListItem struct {
-	ID          int       `json:"list_item_id" db:"list_item_id"`
-	UserId      int       `json:"user_id" db:"user_id"`
-	ListId      int       `json:"list_id" db:"list_id"`
-	Title       string    `json:"title" db:"title"`
-	Description string    `json:"description" db:"description"`
-	CreatedAt   string    `json:"created_at" db:"created_at"`
-	UpdatedAt   *time.Time `json:"updated_at" db:"updated_at"`
+	ID          int    `json:"list_item_id" db:"list_item_id"`
+	UserId      int    `json:"user_id" db:"user_id"`
+	ListId      int    `json:"list_id" db:"list_id"`
+	Title       string `json:"title" db:"title"`
+	Description string `json:"description" db:"description"`
+	CreatedAt   string `json:"created_at" db:"created_at"`
 }
 
 func (listItem *ListItem) CreateListItem() http.HandlerFunc {
@@ -84,7 +82,7 @@ func (listItem *ListItem) ShowListItem() http.HandlerFunc {
 func (listItem *ListItem) UpdateListItem() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		params := mux.Vars(request)
-		fmt.Println(params["list_id"])
+		fmt.Println(params["item_id"])
 
 		sql := fmt.Sprintf(`
 			UPDATE list_item_schema
@@ -92,20 +90,16 @@ func (listItem *ListItem) UpdateListItem() http.HandlerFunc {
       title = $1,
       description = $2,
       user_id = $3,
-      list_id = $4,
-			updated_at = $5
-      WHERE user_id = %v RETURNING *
-		`, params["id"])
+      list_id = $4
+      WHERE list_id = %v AND list_item_id = %v
+			RETURNING *
+		`, params["id"], params["item_id"])
 
 		json.NewDecoder(request.Body).Decode(listItem)
 
-		// listItem.UpdatedAt = time.Now()
-
-		now := time.Now()
-
 		_, err := infra.UpdateListItem(
 			sql,
-			listItem.Title, listItem.Description, listItem.UserId, listItem.ListId, now,
+			listItem.Title, listItem.Description, listItem.UserId, listItem.ListId,
 		)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)
@@ -123,6 +117,24 @@ func (listItem *ListItem) UpdateListItem() http.HandlerFunc {
 
 func (listItem *ListItem) DeleteListItem() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
+		// params := mux.Vars(request)
+		// sql := fmt.Sprintf(
+		// 	"DELETE FROM list_item_schema WHERE list_id=%v AND list_item_id=%v",
+		// 	params["id"], params["item_id"])
 
+		// _, err := config.Delete(sql)
+		// if err != nil {
+		// 	response.WriteHeader(http.StatusInternalServerError)
+
+		// 	json.NewEncoder(response).Encode(map[string]string{
+		// 		"Fail": fmt.Sprintf("Error when deleting user: %v", err),
+		// 	})
+
+		// 	return
+		// }
+
+		json.NewEncoder(response).Encode(map[string]string{
+			"message": "Item deleted with success!",
+		})
 	}
 }

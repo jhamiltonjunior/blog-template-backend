@@ -9,7 +9,6 @@ CREATE TABLE list_item_schema(
   description TEXT NOT NULL,
   
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NULL,
 
   FOREIGN KEY(list_id)
     REFERENCES list_schema(list_id)
