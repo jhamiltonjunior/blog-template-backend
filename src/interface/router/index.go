@@ -30,6 +30,7 @@ func (server *Server) routes() {
 	middlewares.Use(middleware.SetContentType)
 
 	server.User()
+	server.Authenticate()
 	server.List()
 	server.ListItem()
 

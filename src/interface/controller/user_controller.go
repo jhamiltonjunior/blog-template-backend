@@ -11,18 +11,21 @@ import (
 	"github.com/jhamiltonjunior/priza-tech-backend/src/infra"
 )
 
-// _, err = db.Exec(sql, values)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return
-// 	}
-// user: 'postgres',
-//   host: 'localhost',
-//   database: 'nauts',
-//   password: '0000',
-//   port: 5432,
-// "postgres://postgres@localhost/testdb?sslmode=disable"
-
+// The User struct is responsible for getting the req.Body and inserting it into the database
+// and the same is responsible for "porpulating" the JSON that returns from the database
+//
+// Please you from the frontend, redirect the user to the route
+//  /api/v{n}/authenticate
+// Here I just create the user, I don't have any JWT authenticate here
+//
+//
+// User é o responsavel por pegar o req.Body e inserir no banco de dados
+// e o mesmo é responsavel por "porpular" o JSON que retorna do banco de dados
+//
+// Por favor, você do frontend, redirecione o usuário para a rota
+//  /api/v{n}/authenticate
+// Aqui eu somente crio o usuário, não tenho nenhum JWT authenticate aqui
+//
 type User struct {
 	ID int `json:"user_id" db:"user_id"`
 
@@ -41,7 +44,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
-// There is an error here in returning user data
+// CreateUser There is an error here in returning user data
 // it doesn't show the ID correctly, nor the Creation Date
 // even though the user was created
 // if you go in the route that shows all users you will see that
@@ -63,8 +66,6 @@ type User struct {
 //
 func (user *User) CreateUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
-		response.Header().Set("Content-Type", "application/json")
-
 		json.NewDecoder(req.Body).Decode(user)
 
 		_, err := infra.InsertUser(
@@ -83,7 +84,7 @@ func (user *User) CreateUser() http.HandlerFunc {
 			})
 
 			// the return after the error the application continues that prevents
-			// 
+			//
 			// o return impede que após o erro a aplização continue executando
 			return
 		}
@@ -103,6 +104,38 @@ func (user *User) CreateUser() http.HandlerFunc {
 
 }
 
+// ListAllUser will list ALL users that are registered in the database
+// that's right, if there are 1 thousand users I advise you to put another 8 or 16 GB's of RAM
+// on your machine
+//
+// In a new feature, a DESC LIMIT {NUMBER} OFFSET {NUMBER} could be placed in the query
+// This will prevent server crashes or slowdowns.
+//
+// Can you imagine having to list 1000 users for 20 people at the same time?
+//
+// Consider being very careful with this.
+//
+// Why wasn't this implemented?
+//
+// This function shouldn't even exist!
+// I ended up creating this function by accident, now it's a feature
+//
+//    <|Portugue Version|>
+// ListAllUser vai listar TODOS os usários que estão cadastrados no banco de dados
+// isso mesmo, se houver 1 mil usários eu aconselho você colocar mais uns 8 ou 16GB's de RAM
+// na sua máquina
+//
+//  Em uma nova feature poderia ser colocado um DESC LIMIT {NUMBER} OFFSET {NUMBER} na query
+// Isso ira impedir travamentos ou lentidão no servidor.
+//
+//  Imagina ter que listar 1 mil usuários para 20 pessoas ao mesmo tempo?
+//
+// Considere tomar bastante cuidado com isso.
+// 
+// Porque isso não foi implementado?
+// 
+//  Essa função nem deveria exitir!
+// Acabei criando essa função por acidente, agora é uma feature
 func (user *User) ListAllUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		rows, err := config.Select("SELECT * FROM user_schema")
@@ -165,6 +198,16 @@ func (user *User) ListAllUser() http.HandlerFunc {
 	}
 }
 
+// ListUniqueUser Wil list a single user by id of url
+//  /api/v{1}/user/{id:[0-9]+}
+// If there is no error it will return a JSON with the referring user
+// to the id of the url
+// 
+// ListUniqueUser Vai listar um unico usuário pelo id da url
+//  /api/v{1}/user/{id:[0-9]+}
+// 
+// Se não houver nenhum erro irá retornar um JSON com o usuário referente
+// ao id da url
 func (user *User) ListUniqueUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		params := mux.Vars(request)
@@ -283,6 +326,9 @@ func (user *User) UpdateUser() http.HandlerFunc {
 	}
 }
 
+// Will delete a user by id
+// 
+// Vai deletar um usuário pelo id
 func (user *User) DeleteUser() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		params := mux.Vars(request)
