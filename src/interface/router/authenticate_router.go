@@ -17,5 +17,5 @@ func (server *Server) Authenticate() {
 
 	server.HandleFunc("/api/v1/authenticate", auth.Authenticate()).Methods("POST")
 
-	// server.HandleFunc("/api/v1/authenticate/sso", listItem.CreateListItem()).Methods("POST")
+	server.HandleFunc("/api/v1/authenticate/sso", auth.AuthenticateSSO()).Methods("POST")
 }

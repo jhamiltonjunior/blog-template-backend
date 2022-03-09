@@ -1,7 +1,11 @@
-FROM golang
+FROM golang:1.17.7-buster
 
 
-RUN go get github.com/gorilla/mux
+# Download all the dependencies
+RUN go get -d -v ./...
+
+# Install the package
+RUN go install -v ./...
 
 
 EXPOSE 3000

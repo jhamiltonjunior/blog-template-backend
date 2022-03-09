@@ -177,13 +177,19 @@ Certifique-se de estar na raiz do projeto e rode os seguintes comando:
 ```go
 go mod tidy
 
+go get -d -v ./...
+```
+
+Ou você pode tentar
+```go
+go mod tidy
+
+go get -u github.com/dgrijalva/jwt-go
 go get -u github.com/cosmtrek/air
 go get -u github.com/gorilla/mux v1.8.0
 go get -u github.com/jmoiron/sqlx v1.3.4
 go get -u github.com/joho/godotenv v1.4.0
 go get -u github.com/lib/pq
-
-go mod tidy
 ```
 
 O ```air``` é um live reload para o Golang, dessa forma você não terá que ficar iniciando o servido toda hora
