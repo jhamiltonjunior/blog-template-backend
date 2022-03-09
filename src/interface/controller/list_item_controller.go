@@ -68,11 +68,6 @@ func (listItem *ListItem) CreateListItem() http.HandlerFunc {
 // Will show all items in the list
 // the WHERE here refers to the list_id, there is no lookup to see
 // only one item in a list, there was no such requirement, maybe that wasn't the point
-// 
-// Irá mostrar todos os itens que há dentro da lista
-// o WHERE aqui é referente ao list_id, não existe uma pesquisa para ver 
-// apenas um item de uma lista, não havia esse requisito, talvez não era esse o objetivo
-// 
 func (listItem *ListItem) ShowListItem() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		params := mux.Vars(request)
@@ -80,9 +75,6 @@ func (listItem *ListItem) ShowListItem() http.HandlerFunc {
 
 		sql := fmt.Sprintf("SELECT * FROM list_item_schema WHERE list_id=%v", params["id"])
 
-		// row aqui está no singular pelo fata de que só existe um id para cada user
-		// row here it is singular due to the fact that there is only one id for each user
-		//
 		db, err := infra.SelectListItem(sql)
 		if err != nil {
 			response.WriteHeader(http.StatusInternalServerError)

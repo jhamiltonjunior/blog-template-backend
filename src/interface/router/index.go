@@ -35,18 +35,10 @@ func NewServer() *Server {
 // set in response header
 //
 // That is, it will always return a JSON
-// 
-// routes é responsavel por chamar todas as outras rotas
-// ela também é responsavel por chamar o middleware que vai fazer
-// com que todas as outras rotas tenham um Content-type: application/json 
-// setados no header da resposta
-// 
-// Ou seja, ela vai fazer com que sempre seja retornado um JSON
-// 
 func (server *Server) routes() {
 	middlewares := server.Router
 	middlewares.Use(middleware.SetContentType)
-
+	
 	server.User()
 	server.Authenticate()
 	server.List()
@@ -54,9 +46,6 @@ func (server *Server) routes() {
 
 	// This is a gorilla/mux requirement
 	// I need to pass the server.Router as the second parameter
-	//
-	// Isso aqui é um requisito do gorilla/mux
-	// Eu preciso passar o server.Router como segundo parametro
 	//
 	http.Handle("/", server.Router)
 }

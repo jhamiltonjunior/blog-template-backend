@@ -175,12 +175,16 @@ CREATE TABLE list_item_schema(
 Certifique-se de estar na raiz do projeto e rode os seguintes comando:
 
 ```go
-go mod tidy
-
 go get -d -v ./...
+
+# Or 
+go get
+
+# Maybe you need this
+go mod tidy
 ```
 
-Ou você pode tentar
+Ou você pode tentar, instalar todos manulamente
 ```go
 go mod tidy
 

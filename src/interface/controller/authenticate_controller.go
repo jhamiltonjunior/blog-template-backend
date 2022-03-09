@@ -17,9 +17,8 @@ type Auth struct {
 	Password string `json:"passwd" db:"passwd"`
 }
 
-// Uma função fake que retorna o dado inserido
-// no req.Body e um token que também é fake
-//
+// A fake function that returns the entered data
+// in the req.Body and a token that is also fake
 func (auth *Auth) Authenticate() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
 		json.NewDecoder(req.Body).Decode(auth)
@@ -39,18 +38,12 @@ func (auth *Auth) Authenticate() http.HandlerFunc {
 			})
 
 			// the return after the error the application continues that prevents
-			//
-			// o return impede que após o erro a aplização continue executando
 			return
 		}
 
 		// I'm putting the "", to overwrite password,
 		// and don't display it to the end user
 		// please do not use this in frontend application
-		//
-		// Eu estou colocando o "", para sobrescrever o password,
-		// e não exibir para ao usuário final
-		// por favor não use isso no frontend
 		auth.Password = ""
 
 		token, err := getJWT()
@@ -68,9 +61,9 @@ func (auth *Auth) Authenticate() http.HandlerFunc {
 
 }
 
-// Assim como a função anterior essa aqui não é diferente,
-// ela vai retorna o dado inserido
-// no req.Body e um token que também é fake
+// Just like the previous function, this one is no different,
+// it will return the entered data
+// in the req.Body and a token that is also fake
 func (auth *Auth) AuthenticateSSO() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
 		json.NewDecoder(req.Body).Decode(auth)
@@ -90,18 +83,12 @@ func (auth *Auth) AuthenticateSSO() http.HandlerFunc {
 			})
 
 			// the return after the error the application continues that prevents
-			//
-			// o return impede que após o erro a aplização continue executando
 			return
 		}
 
 		// I'm putting the "", to overwrite password,
 		// and don't display it to the end user
 		// please do not use this in frontend application
-		//
-		// Eu estou colocando o "", para sobrescrever o password,
-		// e não exibir para ao usuário final
-		// por favor não use isso no frontend
 		auth.Password = ""
 
 		token, err := getJWT()

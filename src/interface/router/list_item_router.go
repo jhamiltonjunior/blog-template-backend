@@ -8,12 +8,6 @@ import (
 //
 // All routes that exist or that will exist must be here,
 // It is also part of the Server struct
-// 
-// ListItem() é responsavel por administrar todo os Item da Lista
-// 
-// Todas rotas que exitem ou que irão existir devem ficar aqui,
-// Ela tambem faz parte do Server struct
-// 
 func (server *Server) ListItem() {
 	listItem := controller.ListItem{}
 
