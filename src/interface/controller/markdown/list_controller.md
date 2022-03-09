@@ -13,11 +13,11 @@ During this markdown file you will see something like this:
 
 `func` This keyword is used to declare a function, that is, the word before `()` is a function, so `CreateList()` is a occupation.
 
-`(user *User)` means that the function `CreateList()` "is part" of the struct (Structure) User, if you understand Object Oriented Programming, we can call this here a method of the User class, although it's not, but if you're new to Go this will help you understand.
+`(list *List)` means that the function `CreateList()` "is part" of the struct (Structure) User, if you understand Object Oriented Programming, we can call this here a method of the User class, although it's not, but if you're new to Go this will help you understand.
 
 ``http.HandlerFunc`` This is the function return.
 
-So `CreateList` is a function that returns a `http.HandlerFunc` and is a "User class method" or User struct function.
+So `CreateList` is a function that returns a `http.HandlerFunc` and is a "List class method" or List struct function.
 
 
 # CreateList

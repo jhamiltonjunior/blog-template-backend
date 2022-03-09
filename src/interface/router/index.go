@@ -11,6 +11,14 @@ type Server struct {
 	*mux.Router
 }
 
+// This function is responsible for starting the server
+// it will contain the instance of the struct Server
+// and calling the routes server.routes()
+// 
+// Esta função é responsavel por iniciar o servidor
+// nela irá conter a instância da struct Server
+//  e a chamada das rotas server.routes()
+// 
 func NewServer() *Server {
 	server := &Server{
 		Router: mux.NewRouter(),
@@ -21,10 +29,20 @@ func NewServer() *Server {
 	return server
 }
 
-// routes it's lowercase because I don't need to export
+// routes is responsible for calling all other routes
+// it is also responsible for calling the middleware that it will do
+// make all other routes have a Content-type: application/json
+// set in response header
 //
-//rotas é minúscula porque não preciso exportar
-//
+// That is, it will always return a JSON
+// 
+// routes é responsavel por chamar todas as outras rotas
+// ela também é responsavel por chamar o middleware que vai fazer
+// com que todas as outras rotas tenham um Content-type: application/json 
+// setados no header da resposta
+// 
+// Ou seja, ela vai fazer com que sempre seja retornado um JSON
+// 
 func (server *Server) routes() {
 	middlewares := server.Router
 	middlewares.Use(middleware.SetContentType)
