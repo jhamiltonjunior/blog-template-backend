@@ -35,10 +35,11 @@ func NewServer() *Server {
 // set in response header
 //
 // That is, it will always return a JSON
+// 
 func (server *Server) routes() {
 	middlewares := server.Router
 	middlewares.Use(middleware.SetContentType)
-	
+
 	server.User()
 	server.Authenticate()
 	server.List()
