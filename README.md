@@ -1,3 +1,10 @@
+# In English?
+Como era em inglês o codigo e comentário, não falava do README, eu deixei ele em português.
+
+# How to use
+
+[Veja esse video que eu gravei](https://youtu.be/PQ-v4K5BrC8)
+
 # You simply need insert in your terminal this code:
 
 # Em um projeto real
