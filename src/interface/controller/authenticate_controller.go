@@ -13,6 +13,10 @@ type Auth struct {
 	Password string `json:"passwd" db:"passwd"`
 }
 
+
+
+// colocar as alterações feitas aqui no README
+
 func (auth *Auth) Authenticate() http.HandlerFunc {
 	return func(response http.ResponseWriter, req *http.Request) {
 		json.NewDecoder(req.Body).Decode(auth)
